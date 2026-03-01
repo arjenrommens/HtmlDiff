@@ -1,6 +1,6 @@
 <?php
 
-namespace ArjenRommens\HtmlDiff;
+namespace Arjenrommens\HtmlDiff;
 
 use Generator;
 

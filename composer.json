@@ -21,12 +21,12 @@
     },
 	"autoload": {
 		"psr-4": {
-			"ArjenRommens\\HtmlDiff\\": "src"
+			"Arjenrommens\\HtmlDiff\\": "src"
 		}
 	},
 	"autoload-dev": {
 		"psr-4": {
-			"ArjenRommens\\HtmlDiff\\Tests\\": "tests"
+			"Arjenrommens\\HtmlDiff\\Tests\\": "tests"
 		}
 	},
 	"scripts": {

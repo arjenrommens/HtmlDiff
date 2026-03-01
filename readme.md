@@ -22,14 +22,14 @@ composer require ssddanbrown/htmldiff
 The library provides a direct static function to quickly create a HTML diff:
 
 ```php
-$diff = ArjenRommens\HtmlDiff\Diff::excecute('<p>Hello there!</p>', '<p>Hi there!</p>');
+$diff = Arjenrommens\HtmlDiff\Diff::excecute('<p>Hello there!</p>', '<p>Hi there!</p>');
 // $diff = '<p><del class="diffmod">Hello</del><ins class="diffmod">Hi</ins> there!</p>';
 ```
 
 Alternatively, You can instead create an instance of the `Diff` class to configure a few options first:
 
 ```php
-use ArjenRommens\HtmlDiff\Diff;
+use Arjenrommens\HtmlDiff\Diff;
 
 $diff = new Diff('<p>Hello there!</p>', '<p>Hi there!</p>');
 $diff->repeatingWordsAccuracy = 1;

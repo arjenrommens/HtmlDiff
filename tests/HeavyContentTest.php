@@ -1,7 +1,7 @@
-<?php namespace ArjenRommens\HtmlDiff\Tests;
+<?php namespace Arjenrommens\HtmlDiff\Tests;
 
 use PHPUnit\Framework\TestCase;
-use ArjenRommens\HtmlDiff\Diff;
+use Arjenrommens\HtmlDiff\Diff;
 
 class HeavyContentTest extends TestCase
 {

@@ -1,4 +1,4 @@
-<?php namespace ArjenRommens\HtmlDiff;
+<?php namespace Arjenrommens\HtmlDiff;
 
 class DiffMatch
 {

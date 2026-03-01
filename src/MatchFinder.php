@@ -1,4 +1,4 @@
-<?php namespace arjenrommens\HtmlDiff;
+<?php namespace Arjenrommens\HtmlDiff;
 
 /**
  * Finds the longest match in given texts.
