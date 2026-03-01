@@ -1,4 +1,4 @@
-<?php namespace Ssddanbrown\HtmlDiff;
+<?php namespace arjenrommens\HtmlDiff;
 
 class Action
 {

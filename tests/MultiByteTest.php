@@ -1,7 +1,7 @@
-<?php namespace Ssddanbrown\HtmlDiff\Tests;
+<?php namespace ArjenRommens\HtmlDiff\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Ssddanbrown\HtmlDiff\Diff;
+use ArjenRommens\HtmlDiff\Diff;
 
 class MultiByteTest extends TestCase
 {
