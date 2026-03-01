@@ -1,5 +1,5 @@
 {
-    "name": "ArjenRommens/htmldiff",
+	"name": "arjenrommens/htmldiff",
     "description": "HTML Content Diff Generator",
 	"homepage": "https://github.com/arjenrommens/HtmlDiff",
 	"license": "MIT",
@@ -21,7 +21,7 @@
     },
 	"autoload": {
 		"psr-4": {
-			"Arjenrommens\\HtmlDiff\\": "src"
+			"Arjenrommens\\HtmlDiff\\": "src/"
 		}
 	},
 	"autoload-dev": {
