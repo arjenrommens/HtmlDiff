@@ -1,13 +1,13 @@
 {
-    "name": "ssddanbrown/htmldiff",
+    "name": "arjenrommens/htmldiff",
     "description": "HTML Content Diff Generator",
-	"homepage": "https://github.com/ssddanbrown/htmldiff",
+	"homepage": "https://github.com/arjenrommens/HtmlDiff",
 	"license": "MIT",
 	"type": "library",
 	"authors": [
         {
-            "name": "Dan Brown",
-            "email": "ssddanbrown@googlemail.com",
+            "name": "Arjen Rommens",
+            "email": "rommens@gmail.com",
 			"role": "Developer"
         }
     ],

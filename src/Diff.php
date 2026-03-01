@@ -80,6 +80,11 @@ class Diff
     private $blockExpressions = [];
 
     /**
+     * @var array<array{tag: string, class: string}>
+     */
+    private $ignoredSelectors = [];
+
+    /**
      * Defines how to compare repeating words. Valid values are from 0 to 1. This value allows to exclude
      * some words from comparison that eventually reduces the total time of the diff algorithm. 0 means
      * that all words are excluded so the diff will not find any matching words at all. 1 (default value)
@@ -128,6 +133,12 @@ class Diff
             return $this->newText;
         }
 
+        $newReplacements = [];
+        if (!empty($this->ignoredSelectors)) {
+            $this->oldText = $this->removeIgnoredRegions($this->oldText);
+            [$this->newText, $newReplacements] = $this->replaceIgnoredRegions($this->newText);
+        }
+
         $this->splitInputIntoWords();
 
         $this->matchGranularity = min($this->matchGranularityMaximum, min(count($this->oldWords), count($this->newWords)));
@@ -136,6 +147,10 @@ class Diff
 
         foreach ($operations as $item) {
             $this->performOperation($item);
+        }
+
+        if (!empty($this->ignoredSelectors)) {
+            $this->content = $this->restoreIgnoredRegions($this->content, $newReplacements);
         }
 
         return $this->content;
@@ -148,6 +163,82 @@ class Diff
     public function addBlockExpression(string $expression): void
     {
         $this->blockExpressions[] = $expression;
+    }
+
+    /**
+     * Adds a selector for HTML elements whose content changes should be ignored in the diff output.
+     * Matched elements will be shown as-is from the new text without any ins/del markup.
+     */
+    public function addIgnoredSelector(string $tagName, string $className = ''): void
+    {
+        $this->ignoredSelectors[] = ['tag' => $tagName, 'class' => $className];
+    }
+
+    private function buildIgnoredPattern(array $selector): string
+    {
+        $tag = preg_quote($selector['tag'], '/');
+        if ($selector['class'] !== '') {
+            $class = preg_quote($selector['class'], '/');
+            return '/<' . $tag . '\b[^>]*class="[^"]*\b' . $class . '\b[^"]*"[^>]*>.*?<\/' . $tag . '>/si';
+        }
+        return '/<' . $tag . '\b[^>]*>.*?<\/' . $tag . '>/si';
+    }
+
+    private function removeIgnoredRegions(string $text): string
+    {
+        foreach ($this->ignoredSelectors as $selector) {
+            $text = preg_replace($this->buildIgnoredPattern($selector), '', $text);
+        }
+        return $text;
+    }
+
+    /**
+     * @return array{string, string[]}
+     */
+    private function replaceIgnoredRegions(string $text): array
+    {
+        $replacements = [];
+        foreach ($this->ignoredSelectors as $selector) {
+            $text = preg_replace_callback(
+                $this->buildIgnoredPattern($selector),
+                function ($matches) use (&$replacements) {
+                    $i = count($replacements);
+                    $replacements[$i] = $matches[0];
+                    return "HTMLDIFFIGNORED_$i";
+                },
+                $text
+            );
+        }
+        return [$text, $replacements];
+    }
+
+    /**
+     * @param string[] $newReplacements
+     */
+    private function restoreIgnoredRegions(string $content, array $newReplacements): string
+    {
+        // Strip ins/del wrappers that contain only our placeholders, inject actual content
+        $content = preg_replace_callback(
+            '/<(?:ins|del)\b[^>]*>((?:\s*HTMLDIFFIGNORED_\d+\s*)+)<\/(?:ins|del)>/i',
+            function ($matches) use ($newReplacements) {
+                return preg_replace_callback(
+                    '/HTMLDIFFIGNORED_(\d+)/',
+                    function ($m) use ($newReplacements) {
+                        return $newReplacements[(int)$m[1]] ?? $m[0];
+                    },
+                    $matches[1]
+                );
+            },
+            $content
+        );
+        // Fallback: replace any remaining placeholders (e.g. mixed ins blocks)
+        return preg_replace_callback(
+            '/HTMLDIFFIGNORED_(\d+)/',
+            function ($m) use ($newReplacements) {
+                return $newReplacements[(int)$m[1]] ?? $m[0];
+            },
+            $content
+        );
     }
 
     private function splitInputIntoWords(): void

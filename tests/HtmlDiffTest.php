@@ -122,4 +122,59 @@ class HtmlDiffTest extends TestCase
         $output = Diff::excecute("AAA BBB CCC", "ZZZ BBB YYY");
         $this->assertEquals('<del class="diffmod">AAA</del><ins class="diffmod">ZZZ</ins> BBB <del class="diffmod">CCC</del><ins class="diffmod">YYY</ins>', $output);
     }
+
+    public function test_ignored_selector_hides_content_change_inside_tag()
+    {
+        $diff = new Diff(
+            '<p>Hello</p><span class="dynamic">old</span><p>World</p>',
+            '<p>Hello</p><span class="dynamic">new</span><p>World</p>'
+        );
+        $diff->addIgnoredSelector('span', 'dynamic');
+        $output = $diff->build();
+        $this->assertEquals('<p>Hello</p><span class="dynamic">new</span><p>World</p>', $output);
+    }
+
+    public function test_ignored_selector_hides_removed_tag()
+    {
+        $diff = new Diff(
+            '<p>Hello</p><span class="dynamic">old</span><p>World</p>',
+            '<p>Hello</p><p>World</p>'
+        );
+        $diff->addIgnoredSelector('span', 'dynamic');
+        $output = $diff->build();
+        $this->assertEquals('<p>Hello</p><p>World</p>', $output);
+    }
+
+    public function test_ignored_selector_shows_added_tag_without_diff_markup()
+    {
+        $diff = new Diff(
+            '<p>Hello</p><p>World</p>',
+            '<p>Hello</p><span class="dynamic">new</span><p>World</p>'
+        );
+        $diff->addIgnoredSelector('span', 'dynamic');
+        $output = $diff->build();
+        $this->assertEquals('<p>Hello</p><span class="dynamic">new</span><p>World</p>', $output);
+    }
+
+    public function test_ignored_selector_tag_only_ignores_all_instances()
+    {
+        $diff = new Diff(
+            '<p>Hello <em>world</em></p>',
+            '<p>Hello <em>universe</em></p>'
+        );
+        $diff->addIgnoredSelector('em');
+        $output = $diff->build();
+        $this->assertEquals('<p>Hello <em>universe</em></p>', $output);
+    }
+
+    public function test_ignored_selector_surrounding_diffs_still_shown()
+    {
+        $diff = new Diff(
+            '<p>AAA</p><span class="d">old</span><p>BBB</p>',
+            '<p>ZZZ</p><span class="d">new</span><p>BBB</p>'
+        );
+        $diff->addIgnoredSelector('span', 'd');
+        $output = $diff->build();
+        $this->assertEquals('<p><del class="diffmod">AAA</del><ins class="diffmod">ZZZ</ins></p><span class="d">new</span><p>BBB</p>', $output);
+    }
 }
